@@ -7,6 +7,8 @@ import sklearn.decomposition as dc
 import sklearn.cluster as cl
 import sklearn.metrics as me
 from yellowbrick.cluster import KElbowVisualizer
+from sklearn.model_selection import train_test_split
+from sklearn.metrics.pairwise import cosine_similarity
 
 df = pd.read_csv("spotify_songs.csv")
 df.shape
@@ -108,5 +110,56 @@ def var_by_genre(df):
 
 # call functions here, for example:
 highest_correlators(df)
+
+dfnorm = normalise(df)
+
+# Compute cosine similarity between tracks based on selected features
+track_features = dfnorm
+track_similarity_matrix = cosine_similarity(dfnorm)
+
+track_similarity_df = pd.DataFrame(track_similarity_matrix, index=df['track_id'], columns=df['track_id'])
+
+def find_top_similar_songs(song_id, top_n=5):
+    chosen_song_index = df[df['track_id'] == song_id].index[0]
+    similarity_scores = track_similarity_df.iloc[chosen_song_index]
+    similar_songs = similarity_scores.sort_values(ascending=False)
+    top_similar_songs = similar_songs.iloc[1:top_n+1]
+    top_similar_song_ids = top_similar_songs.index.tolist()
+    top_similar_songs_details = df[df['track_id'].isin(top_similar_song_ids)]
+
+    return top_similar_songs_details
+
+# Try the function with a given track_id
+chosen_track_id = '1e8PAfcKUYoKkxPhrHqw4x'
+top_similar_songs = find_top_similar_songs(chosen_track_id, top_n=5)
+print(top_similar_songs)
+
+def plot_similarity_comparison(chosen_track_id, top_similar_songs):
+
+    columns = df.select_dtypes(include='number').columns
+    chosen_song = df[df['track_id'] == chosen_track_id]
+    chosen_song_features = chosen_song[columns].values.flatten()
+    top_similar_songs_features = top_similar_songs[columns].values
+
+    plt.figure(figsize=(16, 8))
+    bar_width = 0.2
+    index = range(len(dfnorm))
+    plt.bar(index, chosen_song_features, bar_width, label=f'Chosen Song: {chosen_song.iloc[0]["track_name"]}', color='#245eb8')
+    
+    colors = ['#D4D4D4', '#B4B4B4', '#909090', '#636363', '#494848']
+
+    for i, similar_song_features in enumerate(top_similar_songs_features):
+        plt.bar([x + (i + 1) * bar_width for x in index], similar_song_features, bar_width, label=top_similar_songs.iloc[i]['track_name'], color=colors[i])
+
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.xlabel('Features')
+    plt.ylabel('Normalized Values')
+    plt.title(f'Similarity Comparison of Features for Chosen Song to Top 5 Similar Ones')
+    plt.xticks([x + (len(top_similar_songs) + 1) * bar_width / 2 for x in index], col, rotation=45, ha='right') 
+    plt.legend(fontsize=10)
+    plt.show()
+
+plot_similarity_comparison(chosen_track_id, top_similar_songs)
 
 
