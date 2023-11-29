@@ -34,7 +34,7 @@ def normalised_boxplot(df):
     dfnorm.boxplot(rot=90)
     plt.show()
 
-def large_correlations(df):
+def large_correlations(df, correlation_matrix):
     corrmat_big = correlation_matrix
     corrmat_big[np.absolute(corrmat_big.values) < 0.1] = 0
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
