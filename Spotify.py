@@ -26,11 +26,15 @@ def ScatterMatrix(df):
     pd.plotting.scatter_matrix(df);
     # plt.show()
 
-def normalised_boxplot(df):
+def normalise(df):
     x = df.select_dtypes(include='number').values
     scaler = pp.MinMaxScaler()
     x_scaled = scaler.fit_transform(x)
     dfnorm = pd.DataFrame(x_scaled,columns = df.select_dtypes(include='number').columns)
+    return dfnorm
+
+def boxplot(df):
+    dfnorm = normalise(df)
     dfnorm.boxplot(rot=90)
     plt.show()
 
@@ -61,6 +65,46 @@ def highest_correlators(df):
     ax6.set_xlabel('tempo')
     ax6.set_ylabel('energy')
     plt.show()
+
+def seperate_genre(df):
+    genres = df['playlist_genre'].unique()
+    EDM = normalise(df[df["playlist_genre"]=="edm"])
+    Latin = normalise(df[df["playlist_genre"]=="latin"])
+    Pop = normalise(df[df["playlist_genre"]=="pop"])
+    RnB = normalise(df[df["playlist_genre"]=="r&b"])
+    Rap = normalise(df[df["playlist_genre"]=="rap"])
+    Rock = normalise(df[df["playlist_genre"]=="rock"])
+    return EDM, Latin, Pop, RnB, Rap, Rock
+
+def hist_by_genre(df):
+    EDM, Latin, Pop, RnB, Rap, Rock = seperate_genre(df)
+    alpha = 0.7
+    for column in df.select_dtypes(include="number").columns.values:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        EDM[[column]].hist(ax=ax,alpha=alpha,label='EDM')
+        Latin[[column]].hist(ax=ax,alpha=alpha,label='Latin')
+        Pop[[column]].hist(ax=ax,alpha=alpha,label='Pop')
+        RnB[[column]].hist(ax=ax,alpha=alpha,label='RnB')
+        Rap[[column]].hist(ax=ax,alpha=alpha,label='Rap')
+        Rock[[column]].hist(ax=ax,alpha=alpha,label='Rock')
+        ax.legend()
+
+def var_by_genre(df):
+    EDM, Latin, Pop, RnB, Rap, Rock = seperate_genre(df)
+    genre_data = [EDM, Latin, Pop, RnB, Rap, Rock]
+    variances = np.zeros(13)
+    means = np.zeros(6)
+    v = 0
+    columns = df.select_dtypes(include='number').columns
+    for column in columns:
+        m = 0
+        for genre in genre_data:
+            means[m] = genre[column].mean()
+            m+=1
+        variances[v] = means.std()
+        v+=1
+    plt.bar(columns,variances)
 
 # call functions here, for example:
 highest_correlators(df)
