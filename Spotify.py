@@ -363,7 +363,8 @@ highest_correlators(df)
 
 small_df4 = df[['track_popularity', 'danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms']]
 normalise(small_df4)
-X, pca = do_pca(small_df4)
+pca = dc.PCA()
+X = pca.fit_transform(small_df4)
 
 # Explained variance - how much each principal component means
 exp_var_pca4 = pca.explained_variance_ratio_
