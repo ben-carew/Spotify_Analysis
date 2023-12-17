@@ -24,12 +24,14 @@ df.head()
 df.info()
 df.describe()
 df.hist(figsize=(14, 9), bins=20)
+plt.savefig('FeaturesDistribution.png')
 
 def CorrMat(df):
     correlation_matrix = df.corr(numeric_only=True)
     plt.figure(figsize=(10, 8))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
     plt.title('Correlation Matrix Heatmap')
+    plt.savefig('CorrelationMatrix.png')
     plt.show()
 
 def ScatterMatrix(df):
@@ -46,12 +48,14 @@ def normalise(df):
 def boxplot(df):
     dfnorm = normalise(df)
     dfnorm.boxplot(rot=90)
+    plt.savefig('BOoxplot.png')
     plt.show()
 
 def large_correlations(df, correlation_matrix):
     corrmat_big = correlation_matrix
     corrmat_big[np.absolute(corrmat_big.values) < 0.1] = 0
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+    plt.savefig('BigCorrMatrix.png')
     plt.show()
 
 def highest_correlators(df):
@@ -137,6 +141,7 @@ def plot_dendrogram(model, **kwargs):
 
     # Plot the corresponding dendrogram
     sp.cluster.hierarchy.dendrogram(linkage_matrix, **kwargs)
+    plt.savefig('Dendogram.png')
     plt.show()
 
 def clustering(df):
@@ -186,6 +191,8 @@ highest_correlators(df)
 # plt.ylabel('Count')
 # plt.title('Histogram of Song Release Years')
 # plt.grid()
+# plt.savefig('SongsByYear.png')
+
 #
 # #Average track popularity by year
 # mean_popularity = df.groupby('year')['track_popularity'].mean()
@@ -195,7 +202,8 @@ highest_correlators(df)
 # plt.ylabel('Average Popularity')
 # plt.title('Average Track Popularity by Year')
 # plt.grid(True)
-#
+# plt.savefig('AvgPop.png')
+
 # #Set charachteristics
 # columns = ['danceability', 'energy', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms']
 #
@@ -210,6 +218,7 @@ highest_correlators(df)
 #     plt.ylabel('Average ' + column)
 #     plt.title('Average ' + column + ' by Year')
 #     plt.grid(True)
+#     plt.savefig(f'AvgFeature{column}.png')
 #     plt.show()
 #
 # # We build graphs for songs with a popularity value greater than 70
@@ -221,6 +230,7 @@ highest_correlators(df)
 # plt.ylabel('Count')
 # plt.title('Histogram of Song Release Years (Popularity > 70)')
 # plt.grid(True)
+# plt.savefig('Pop>70.png')
 #
 # # We group songs by year and compute the mean of each feature 
 # # We do the same with songs which have a popularity > 70%
@@ -236,6 +246,7 @@ highest_correlators(df)
 #     plt.grid(True)
 #     plt.title('Average ' + column + ' by Year')
 #     plt.legend()
+#     plt.savefig(f'Avg{column}byYearMaxPopularity.png')
 #
 # # Now we do the same but with songs much less popular (< 2%)
 # unpopular_df = df[df['track_popularity'] < 2]
@@ -252,6 +263,8 @@ highest_correlators(df)
 #     plt.title('Average ' + column + ' by Year')
 #     plt.legend()
 #     plt.grid(True)
+#     plt.savefig(f'Avg{column}byYearMinPopularity.png')
+#
 #
 # grouped = df.groupby('year')
 #
@@ -273,6 +286,7 @@ highest_correlators(df)
 #     plt.ylabel('Correlation with track_popularity')
 #     plt.title('Correlation of ' + column + ' with track_popularity by Year')
 #     plt.grid(True)
+#     plt.savefig(f'Avg{column}Corr.png')
 #
 # # We group songs by artist and count the number of songs for each artist
 # song_count = df['track_artist'].value_counts()
@@ -296,6 +310,7 @@ highest_correlators(df)
 # plt.title('Top 5 Artists by Average Popularity')
 # plt.gca().invert_yaxis()
 # plt.grid(True)
+# plt.savefig('TopArtistByPop.png')
 #
 # plt.figure(figsize=(10, 6))
 # plt.barh(top_artists_by_song.index, top_artists_by_song.values, color='skyblue')
@@ -303,6 +318,7 @@ highest_correlators(df)
 # plt.title('Top 5 Artists by Number of Songs with Popularity > 80')
 # plt.gca().invert_yaxis()
 # plt.grid(True)
+# plt.savefig('TopArtistByNumSong.png')
 #
 # # We create a new column for decades
 # df['decade'] = (df['year'] // 10) * 10
@@ -335,6 +351,7 @@ highest_correlators(df)
 #     plt.xlabel('Average Popularity')
 #     plt.title('Top 5 Genres by Average Popularity in the ' + str(decade) + 's')
 #     plt.gca().invert_yaxis()
+#     plt.savefig(f'TopArtist{decade}.png')
 #     plt.show()
 #
 # # We group songs by artist and decade and count the number of songs per artist
@@ -353,6 +370,7 @@ highest_correlators(df)
 #     plt.xlabel('Number of Songs with Popularity > 80')
 #     plt.title('Top 5 Artists by Number of Songs with Popularity > 80 in the ' + str(decade) + 's')
 #     plt.gca().invert_yaxis()
+#     plt.savefig(f'TopArtistNumSong{decade}.png')
 #     plt.show()
 #
 #
@@ -381,6 +399,7 @@ plt.ylabel('Explained variance ratio')
 plt.xlabel('Principal component index')
 plt.legend(loc='best')
 plt.tight_layout()
+plt.savefig('ExplaineVarianceRatio.png')
 plt.show()
 
 # Apply the clustering algorithm
@@ -389,6 +408,7 @@ km = KMeans(n_clusters=4, random_state=0, n_init='auto').fit(X)
 # Plot the 2D scatter plot of the pca with clusters
 plt.scatter(X[:,0], X[:,1], c = km.labels_, s=2)
 plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], marker='x', s=169, linewidths=3, color='red', zorder=10)
+plt.savefig('Clustering2D.png')
 
 # Plot it in 3D
 fig = plt.figure(figsize=(8, 6))
@@ -400,6 +420,7 @@ ax.set_xlabel('X Axis')
 ax.set_ylabel('Y Axis')
 ax.set_zlabel('Z Axis')
 ax.legend()
+plt.savefig('Clustering3D.png')
 plt.show()
 
 # Analyze clusters
@@ -516,6 +537,7 @@ for n_clusters in range_n_clusters:
         fontweight="bold",
     )
 
+plt.savefig('SilhouetteMethod.png')
 plt.show()
 
 
@@ -534,4 +556,5 @@ plt.plot(K, Sum_of_squared_distances, 'bx-')
 plt.xlabel('k')
 plt.ylabel('Sum_of_squared_distances')
 plt.title('Elbow Method For Optimal k')
+plt.savefig('ElbowMethod.png')
 plt.show()
