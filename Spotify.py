@@ -14,6 +14,7 @@ from sklearn.cluster import KMeans #HDBSCAN
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.cm as cm
+from sklearn.cluster import HDBSCAN
 
 
 
@@ -373,7 +374,9 @@ highest_correlators(df)
 #     plt.savefig(f'TopArtistNumSong{decade}.png')
 #     plt.show()
 #
-#
+
+
+
 # ===================================================
 #                   K-MEANS
 # ===================================================
@@ -557,4 +560,33 @@ plt.xlabel('k')
 plt.ylabel('Sum_of_squared_distances')
 plt.title('Elbow Method For Optimal k')
 plt.savefig('ElbowMethod.png')
+plt.show()
+
+
+# =============================================================
+#                           HDBSCAN
+# =============================================================
+
+hdb = HDBSCAN(min_cluster_size=50, cluster_selection_epsilon=5, ).fit(X)
+
+labels_HDB = hdb.labels_
+# Number of clusters in labels, ignoring noise if present.
+n_clusters_HDB = len(set(labels_HDB)) - (1 if -1 in labels_HDB else 0)
+n_noise_HDB = list(labels_HDB).count(-1)
+
+print("Estimated number of clusters: %d" % n_clusters_HDB)
+print("Estimated number of noise points: %d" % n_noise_HDB)
+
+plt.scatter(X[:,0], X[:,1], c = hdb.labels_, s=2)
+plt.savefig('hdbscan2D.png')
+
+# Plot in 3D
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(111, projection='3d')
+scatter = ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=hdb.labels_, s=2)
+
+ax.set_xlabel('X Axis')
+ax.set_ylabel('Y Axis')
+ax.set_zlabel('Z Axis')
+plt.savefig('hdbscan3D.png')
 plt.show()
